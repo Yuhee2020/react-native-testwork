@@ -8,12 +8,13 @@ import ExpoCheckbox from "expo-checkbox";
 import {MaterialIcons} from "@expo/vector-icons";
 import {IconButton} from "native-base";
 import {styles} from "./todoStyles";
+import {TodoImage} from "./todoImage/TodoImage";
 
 type PropsType = {
     todo: TodoType
 }
 
-export const Todo = React.memo(({todo: {status, name, _id}}: PropsType) => {
+export const Todo = React.memo(({todo: {status, name, _id,description}}: PropsType) => {
     const dispatch = useAppDispatch()
 
     const handleCheckboxChange = () => {
@@ -38,6 +39,7 @@ export const Todo = React.memo(({todo: {status, name, _id}}: PropsType) => {
                 <EditablSpan title={name}
                              changeTitle={changeTitle}/>
             </View>
+            <TodoImage todoImage={description} todoId={_id}/>
             <View style={styles.button}>
                 <IconButton
                     borderColor={"gray.300"}
