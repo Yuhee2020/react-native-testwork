@@ -4,8 +4,9 @@ import {AddItemForm} from "../common/addItemForm/AddItemForm";
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import {Todo} from "../todo/Todo";
 import {getTodos} from "../../selectors";
-import {ScrollView, Text, View} from "react-native";
+import {FlatList, ListRenderItem, RefreshControl, ScrollView, Text, View} from "react-native";
 import {styles} from "./todolistStyles";
+import {TodoType} from "../../api";
 
 
 export const Todolist = React.memo(() => {
@@ -18,6 +19,13 @@ export const Todolist = React.memo(() => {
         dispatch(addTodoTC(todoTitle))
     }
 
+    const render: ListRenderItem<TodoType> = ({item, index}) => {
+        return <Todo
+            key={item._id}
+            todo={item}
+            index={index}/>
+    }
+
     useEffect(() => {
         dispatch(getTodosTC())
     }, [dispatch])
@@ -25,17 +33,17 @@ export const Todolist = React.memo(() => {
     return (
         <View style={styles.todolist}>
             <View style={styles.appTitleBox}>
-               <Text style={styles.appTitleText}>What to do?</Text>
+                <Text style={styles.appTitleText}>What to do?</Text>
             </View>
             <AddItemForm label={"Enter new todo title"} addItem={addTask}/>
-            <ScrollView>
-                <View>
-                    {todos ? todos.map(todo =>
-                    <Todo
-                        key={todo._id}
-                        todo={todo}/>
-                ) : <View>add new task please</View>}
-                </View>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={false} onRefresh={()=>dispatch(getTodosTC())} />}
+            >
+                <FlatList
+                    data={todos}
+                    renderItem={render}
+                    ListEmptyComponent={<Text>add new task please</Text>}/>
             </ScrollView>
         </View>
     );

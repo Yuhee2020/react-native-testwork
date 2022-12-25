@@ -1,9 +1,9 @@
-import React, {useCallback} from "react";
+import React, {useCallback, useEffect, useRef} from "react";
 import {deleteTodoTC, updateTodoTC} from "../../store";
 import {EditablSpan} from "../common/editablSpan/EditablSpan";
 import {useAppDispatch} from "../../hooks/hooks";
 import {TodoType} from "../../api";
-import {View} from "react-native";
+import {View, Animated} from "react-native";
 import ExpoCheckbox from "expo-checkbox";
 import {MaterialIcons} from "@expo/vector-icons";
 import {IconButton} from "native-base";
@@ -12,9 +12,12 @@ import {TodoImage} from "./todoImage/TodoImage";
 
 type PropsType = {
     todo: TodoType
+    index:number
 }
 
-export const Todo = React.memo(({todo: {status, name, _id,description}}: PropsType) => {
+export const Todo = React.memo(({todo: {status, name, _id,description},index}: PropsType) => {
+    const opacity=useRef(new Animated.Value(0)).current
+
     const dispatch = useAppDispatch()
 
     const handleCheckboxChange = () => {
@@ -28,8 +31,17 @@ export const Todo = React.memo(({todo: {status, name, _id,description}}: PropsTy
         dispatch(deleteTodoTC(_id))
     }
 
+    useEffect(()=>{
+        Animated.timing(opacity,{
+            toValue:1,
+            duration: 300,
+            delay: 50*index,
+            useNativeDriver:true
+        }).start()
+    })
+
     return (
-        <View style={styles.todoContainer}>
+        <Animated.View style={[styles.todoContainer,{opacity}]}>
             <View style={styles.checkbox}><ExpoCheckbox
                 onValueChange={handleCheckboxChange}
                 value={status}
@@ -52,7 +64,7 @@ export const Todo = React.memo(({todo: {status, name, _id,description}}: PropsTy
                         as: MaterialIcons,
                     }}/>
             </View>
-        </View>)
+        </Animated.View>)
 })
 
 
